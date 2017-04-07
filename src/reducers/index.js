@@ -49,6 +49,10 @@ const question = (state, { type, answerIndex, newQuestions, questionsCount }) =>
         stats: stats(state.stats, { good: isCorrect ? 1 : 0, bad: isCorrect ? 0 : 1 })
       })
     case 'QUESTION_NEXT':
+      if (state.index >= state.questions.length) {
+        return state;
+      }
+
       return Object.assign({}, state, {
         index: state.index + 1
       });
