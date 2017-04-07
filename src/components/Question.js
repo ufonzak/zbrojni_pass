@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import logo from '../logo.svg';
-import './App.css';
 import store from '../store';
 
 class Question extends Component {
@@ -14,31 +12,36 @@ class Question extends Component {
   }
 
   render() {
-    const state = store.getState();
-    const question = state.question;
-
-    if (state.questions.length === 0) {
-      return <button onClick={this.onStart.bind(this)}>Start</button>;
-      return null;
-    }
+    const question = store.getState().question;
 
     let index = question.index;
     if (index === null) {
-      return <button onClick={this.onStart.bind(this)}>Start</button>
+      return <button onClick={this.onStart.bind(this)}>Start</button>;
     }
 
-    let questionObject = state.questions[index];
-    let hasAnswered = typeof question.answerIndex === 'number';
-    let hasAnsweredCorrectly = questionObject.answerIndex === question.answerIndex;
+    if (index >= question.questions.length) {
+      return (
+        <div>
+          <p>All done</p>
+          <button onClick={this.onPrev.bind(this)}>Prev</button>
+          <button onClick={this.onStart.bind(this)}>Start</button>
+        </div>
+      );
+    }
+
+    let questionObject = question.questions[index];
+    let hasAnswered = typeof questionObject.answeredIndex === 'number';
+    let hasAnsweredCorrectly = questionObject.answerIndex === questionObject.answeredIndex;
 
     return (
       <div>
+        <p>Question {question.index + 1} / {question.questions.length}</p>
         <p>{questionObject.question}</p>
         <div>
           {questionObject.options.map((option, index) => {
             let color = null;
             if (hasAnswered) {
-              if (index === question.answerIndex) {
+              if (index === questionObject.answeredIndex) {
                 color = hasAnsweredCorrectly ? 'green' : 'red';
               }
               else if (index === questionObject.answerIndex) {
@@ -50,10 +53,14 @@ class Question extends Component {
               style={{
                   backgroundColor: color
                 }}
-              onClick={this.onQuestionClick.bind(this, index)}>
+              onClick={hasAnswered ? null : this.onQuestionClick.bind(this, index)}>
               {option}
             </p>;
           })}
+        </div>
+        <div>
+          <button onClick={this.onNext.bind(this)}>Next</button>
+          <button onClick={this.onPrev.bind(this)}>Prev</button>
         </div>
       </div>
     );
@@ -61,20 +68,25 @@ class Question extends Component {
 
   onQuestionClick(index) {
     console.log(`Option clicked ${index}`);
-    if (this.nextQuestionTimer) {
-      return;
-    }
-
     store.dispatch({ type: 'QUESTION_ANSWER', answerIndex: index });
 
+    //TODO: does not really work
     this.nextQuestionTimer = setTimeout(() => {
-      this.nextQuestionTimer = null;
-      store.dispatch({ type: 'QUESTION_NEXT' });
-    }, 1000);
+      store.dispatch({ type: 'QUESTION_NEXT_IF_CORECT' });
+    }, 2000);
   }
 
   onStart() {
-    store.dispatch({ type: 'QUESTION_START' });
+    const state = store.getState();
+    store.dispatch({ type: 'QUESTION_START', newQuestions: state.questions, questionsCount: 5 });
+  }
+
+  onNext() {
+    store.dispatch({ type: 'QUESTION_NEXT' });
+  }
+
+  onPrev() {
+    store.dispatch({ type: 'QUESTION_PREVIOUS' });
   }
 }
 
