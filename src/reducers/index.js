@@ -14,7 +14,8 @@ const question = (state, { type, answerIndex, newQuestions, questionsCount }) =>
   if (typeof state === 'undefined') {
     state = {
       index: null,
-      questions: []
+      questions: [],
+      stats: stats()
     };
   }
 
@@ -27,22 +28,25 @@ const question = (state, { type, answerIndex, newQuestions, questionsCount }) =>
       let queue = newQuestions.slice();
       let questionsShuffled = [];
 
-      while (questionsCount-- > 0) {
-        let randomIndex = Math.floor(Math.random() * queue.length);
+      let count = questionsCount;
+      while (count-- > 0) {
+        let randomIndex = Math.floor(Math.random() * queue.length); //not pure
         let question = Object.assign({}, queue.splice(randomIndex, 1)[0]);
         questionsShuffled.push(question);
       }
 
       return {
         index: 0,
-        questions: questionsShuffled
+        questions: questionsShuffled,
+        stats: stats(null, { total: questionsCount })
       };
     case 'QUESTION_ANSWER':
       let answered = Object.assign({}, current, { answeredIndex: answerIndex });
       let isCorrect = answered.answeredIndex === answered.answerIndex;
 
       return Object.assign({}, state, {
-        questions: [...state.questions.slice(0, state.index), answered, ...state.questions.slice(state.index + 1)]
+        questions: [...state.questions.slice(0, state.index), answered, ...state.questions.slice(state.index + 1)],
+        stats: stats(state.stats, { good: isCorrect ? 1 : 0, bad: isCorrect ? 0 : 1 })
       })
     case 'QUESTION_NEXT':
       return Object.assign({}, state, {
@@ -67,28 +71,22 @@ const question = (state, { type, answerIndex, newQuestions, questionsCount }) =>
     default:
       return state;
   }
-}
+};
 
-const stats = (state, { type }) => {
-  if (typeof state === 'undefined') {
-    state = {};
+const stats = (state, { good, bad, total } = {}) => {
+  if (!state) {
+    state = { good: 0, bad: 0, total: total || 0 };
   }
-  switch (type) {
-    case 'STATS_RESET':
-      return { good: 0, bad: 0, total: 0 };
-    case 'STATS_GOOD':
-      return Object.assign({}, state, { good: state.good + 1, total: state.total + 1 });
-    case 'STATS_BAD':
-      return Object.assign({}, state, { bad: state.bad + 1, total: state.total + 1 });
-    default:
-      return state;
-  }
-}
+
+  return Object.assign({}, state, {
+    good: state.good + (good || 0),
+    bad: state.bad + (bad || 0)
+  });
+};
 
 const appReducer = combineReducers({
   questions,
-  question,
-  stats
+  question
 });
 
 export default appReducer;

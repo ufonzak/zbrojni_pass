@@ -28,9 +28,6 @@ class App extends Component {
         {state.questions.length ? <Question/> : <p>Loading questions...</p>}
 
         <hr/>
-
-        <Stats/>
-        <hr/>
       </div>
     );
   }

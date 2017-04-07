@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import store from '../store';
+import Stats from './Stats'
 
 class Question extends Component {
   componentDidMount() {
@@ -59,9 +60,11 @@ class Question extends Component {
           })}
         </div>
         <div>
-          <button onClick={this.onNext.bind(this)}>Next</button>
-          <button onClick={this.onPrev.bind(this)}>Prev</button>
+            <button onClick={this.onStart.bind(this)}>Start</button>
+            <button onClick={this.onPrev.bind(this)}>Prev</button>
+            <button onClick={this.onNext.bind(this)}>Next</button>
         </div>
+        <Stats state={question.stats} />
       </div>
     );
   }

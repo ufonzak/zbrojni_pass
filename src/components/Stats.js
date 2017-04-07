@@ -2,16 +2,8 @@ import React, { Component } from 'react';
 import store from '../store';
 
 class Stats extends Component {
-  componentDidMount() {
-    this.unsubscribe = store.subscribe(() => this.forceUpdate());
-  }
-
-  componentWillUnmount() {
-    this.unsubscribe();
-  }
-
   render() {
-    const state = store.getState().stats;
+    const state = this.props.state;
 
     if (typeof state.total !== 'number') {
       return null;
