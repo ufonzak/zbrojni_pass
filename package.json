@@ -3,9 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "bootstrap": "^3.3.7",
     "co": "^4.6.0",
     "deep-freeze": "0.0.1",
+    "install": "^0.8.8",
     "jquery": "^3.2.1",
+    "npm": "^4.4.4",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "redux": "^3.6.0"

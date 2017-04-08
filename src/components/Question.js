@@ -3,7 +3,6 @@ import store from '../store';
 import Stats from './Stats'
 
 class CurrentQuestion extends Component {
-
     componentWillUnmount() {
       clearTimeout(this.nextQuestionTimer);
     }
@@ -16,30 +15,31 @@ class CurrentQuestion extends Component {
       let hasAnsweredCorrectly = questionObject.answerIndex === questionObject.answeredIndex;
 
       return (
-        <div>
-          <p>Question {question.index + 1} / {question.questions.length}</p>
-          <p>{questionObject.question}</p>
-          <div>
+        <div className="panel panel-default">
+          <div className="panel-heading">
+            <h3 className="panel-title">Question {question.index + 1} / {question.questions.length}</h3>
+          </div>
+          <div className="panel-body">
+            <p>{questionObject.question}</p>
+          </div>
+          <ul className="list-group">
             {questionObject.options.map((option, index) => {
-              let color = null;
+              let className = null;
               if (hasAnswered) {
                 if (index === questionObject.answeredIndex) {
-                  color = hasAnsweredCorrectly ? 'green' : 'red';
+                  className = hasAnsweredCorrectly ? 'list-group-item-success' : 'list-group-item-danger';
                 }
                 else if (index === questionObject.answerIndex) {
-                  color = 'yellow';
+                  className = 'list-group-item-warning';
                 }
               }
 
-              return <p key={index}
-                style={{
-                    backgroundColor: color
-                  }}
+              return <li className={["list-group-item", className].join(' ')} key={index}
                 onClick={hasAnswered ? null : this.onQuestionClick.bind(this, index)}>
                 {option}
-              </p>;
+              </li>;
             })}
-          </div>
+          </ul>
         </div>
       );
     }
@@ -57,22 +57,36 @@ class CurrentQuestion extends Component {
 
 class StartBanner extends Component {
   render() {
-    return <div>Click Start New.</div>;
+    return <div className="panel panel-default">
+      <div className="panel-body">
+        Click Start New.
+      </div>
+    </div>;
   }
 }
 class EndBanner extends Component {
   render() {
-    return <div>All done. Click Start New.</div>;
+    return <div className="panel panel-default">
+      <div className="panel-body">
+        All done. Click Start New.
+      </div>
+    </div>;
   }
 }
 
 class QuestionControls extends Component {
   render() {
-        return (
-      <div>
-          <button onClick={this.onStart.bind(this)}>Start New</button>
-          <button onClick={this.onPrev.bind(this)}>Prev</button>
-          <button onClick={this.onNext.bind(this)}>Next</button>
+    return (
+      <div className="panel panel-default">
+        <div className="panel-body">
+          <div className="btn-group" role="group">
+            <button type="button" className="btn btn-default" onClick={this.onStart.bind(this)}>Start New</button>
+          </div>
+          <div className="btn-group pull-right" role="group">
+            <button type="button" className="btn btn-default" onClick={this.onPrev.bind(this)}>Prev</button>
+            <button type="button" className="btn btn-default" onClick={this.onNext.bind(this)}>Next</button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -115,10 +129,16 @@ class Question extends Component {
     }
 
     return (
-      <div>
-        {control}
-        <QuestionControls/>
-        <Stats state={question.stats} />
+      <div className="row">
+        <div className="col-md-12">
+          {control}
+        </div>
+        <div className="col-md-12">
+          <QuestionControls/>
+        </div>
+        <div className="col-md-4">
+          <Stats state={question.stats} />
+        </div>
       </div>
     );
   }

@@ -31,7 +31,15 @@ const question = (state, { type, answerIndex, newQuestions, questionsCount }) =>
       let count = questionsCount;
       while (count-- > 0) {
         let randomIndex = Math.floor(Math.random() * queue.length); //not pure
+
+        //copy question
         let question = Object.assign({}, queue.splice(randomIndex, 1)[0]);
+
+        //shuffle answers
+        let correctText = question.options[question.answerIndex];
+        question.options = shuffle(question.options);
+        question.answerIndex = question.options.indexOf(correctText);
+
         questionsShuffled.push(question);
       }
 
@@ -87,6 +95,15 @@ const stats = (state, { good, bad, total } = {}) => {
     bad: state.bad + (bad || 0)
   });
 };
+
+function shuffle(a) {
+    a = a.slice();
+    for (let i = a.length; i; i--) {
+        let j = Math.floor(Math.random() * i);
+        [a[i - 1], a[j]] = [a[j], a[i - 1]];
+    }
+    return a;
+}
 
 const appReducer = combineReducers({
   questions,
